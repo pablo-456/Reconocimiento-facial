@@ -7,14 +7,16 @@ client = MongoClient("mongodb://localhost:27017/")
 db = client["rostrosDB"]
 personas = db["personas"]
 
-# Nombre de la persona
-personName = 'miguel'
+# Pedir el nombre por input
+personName = input("Ingrese el nombre de la persona: ")
 
+# Video de entrada (cámara)
+cap = cv2.VideoCapture(0)
 # Video de entrada
-cap = cv2.VideoCapture('video_pablo.mp4')
+#cap = cv2.VideoCapture('video_pablo.mp4')
 
 # Clasificador de rostros
-faceClassif = cv2.CascadeClassifier(cv2.data.haarcascades+'haarcascade_frontalface_default.xml')
+faceClassif = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 count = 0
 
 def guardar_rostro(nombre, rostro, count):
@@ -38,20 +40,24 @@ while True:
 
     faces = faceClassif.detectMultiScale(gray, 1.3, 5)
 
-    for (x,y,w,h) in faces:
-        cv2.rectangle(frame, (x,y),(x+w,y+h),(0,255,0),2)
-        rostro = auxFrame[y:y+h, x:x+w]
-        rostro = cv2.resize(rostro, (150,150), interpolation=cv2.INTER_CUBIC)
+    for (x, y, w, h) in faces:
+        cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+        rostro = auxFrame[y:y + h, x:x + w]
+        rostro = cv2.resize(rostro, (150, 150), interpolation=cv2.INTER_CUBIC)
 
         # Guardar en MongoDB
         guardar_rostro(personName, rostro, count)
         count += 1
+        print(f"Foto {count} guardada")
 
     cv2.imshow('frame', frame)
 
+    # Terminar si se presiona ESC o si ya se guardaron 200 fotos
     k = cv2.waitKey(1)
-    if k == 27 or count >= 200:  # ESC o 200 capturas
+    if k == 27 or count >= 200:
         break
 
 cap.release()
 cv2.destroyAllWindows()
+
+print(f"✅ Se guardaron {count} fotos de {personName}")
