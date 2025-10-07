@@ -11,7 +11,7 @@ personas = db["personas"]
 personName = 'miguel'
 
 # Video de entrada
-cap = cv2.VideoCapture('video_miguel.mp4')
+cap = cv2.VideoCapture('video_pablo.mp4')
 
 # Clasificador de rostros
 faceClassif = cv2.CascadeClassifier(cv2.data.haarcascades+'haarcascade_frontalface_default.xml')
