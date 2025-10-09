@@ -9,7 +9,7 @@ personas = db["personas"]
 
 # --- Obtener lista de personas registradas ---
 imagePaths = [p["nombre"] for p in personas.find()]
-print("👥 Personas registradas en MongoDB:", imagePaths)
+print(" Personas registradas en MongoDB:", imagePaths)
 
 # --- Cargar modelo entrenado (LBPH) ---
 face_recognizer = cv2.face.LBPHFaceRecognizer_create()

@@ -94,7 +94,7 @@ while True:
 
     cv2.imshow('Capturando Rostros (Frontal y Perfil)', frame)
 
-    # --- Salida: ESC o 200 fotos ---
+    # --- Salida: ESC o #fotos finalizado ---
     k = cv2.waitKey(1)
     if k == 27 or count >= 200:
         break
