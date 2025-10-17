@@ -4,3 +4,69 @@ tf-env/
 # Ignorar cachés de Python
 __pycache__/
 *.pyc
+
+# ===============================
+# 🧠 ARCHIVOS DE MODELOS Y PESADOS
+# ===============================
+*.xml
+*.yml
+*.dat
+*.pkl
+*.h5
+*.onnx
+*.tflite
+*.mp4
+*.avi
+*.mkv
+*.mov
+*.zip
+*.rar
+*.tar
+*.gz
+*.7z
+
+# Carpeta local de modelos (no versionar)
+modelos/
+modelos_entrenados/
+datasets/
+backups/
+
+# ===============================
+# 🐍 PYTHON
+# ===============================
+__pycache__/
+*.py[cod]
+*.pyo
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.env
+venv/
+tf-env/
+.venv/
+env/
+pip-wheel-metadata/
+
+# ===============================
+# 💻 VISUAL STUDIO CODE / IDEs
+# ===============================
+.vscode/
+.idea/
+*.code-workspace
+
+# ===============================
+# ⚙️ LOGS Y ARCHIVOS TEMPORALES
+# ===============================
+*.log
+*.tmp
+*.bak
+*.swp
+.DS_Store
+Thumbs.db
+
+# ===============================
+# 📦 ARCHIVOS DEL SISTEMA
+# ===============================
+desktop.ini

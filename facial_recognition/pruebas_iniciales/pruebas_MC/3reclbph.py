@@ -56,7 +56,7 @@ while True:
 
                 label, confidence = face_recognizer.predict(rostro)
 
-                if confidence < 70 and 0 <= label < len(imagePaths):
+                if confidence < 65 and 0 <= label < len(imagePaths):
                     name = imagePaths[label]
                     color = (0, 255, 0)
                 else:
@@ -74,7 +74,7 @@ while True:
 
                 label, confidence = face_recognizer.predict(rostro)
 
-                if confidence < 70 and 0 <= label < len(imagePaths):
+                if confidence < 65 and 0 <= label < len(imagePaths):
                     name = imagePaths[label]
                     color = (0, 255, 0)
                 else:
@@ -92,7 +92,7 @@ while True:
 
             label, confidence = face_recognizer.predict(rostro)
 
-            if confidence < 70 and 0 <= label < len(imagePaths):
+            if confidence < 65 and 0 <= label < len(imagePaths):
                 name = imagePaths[label]
                 color = (0, 255, 0)
             else:

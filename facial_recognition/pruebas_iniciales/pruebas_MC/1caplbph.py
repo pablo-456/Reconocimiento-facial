@@ -12,7 +12,7 @@ personName = input("Ingrese el nombre de la persona: ")
 
 # Verificar si ya tiene suficientes rostros almacenados
 persona_existente = personas.find_one({"nombre": personName})
-if persona_existente and "rostros" in persona_existente and len(persona_existente["rostros"]) >= 200:
+if persona_existente and "rostros" in persona_existente and len(persona_existente["rostros"]) >= 600:
     print(f"{personName} ya tiene suficientes rostros registrados.")
     exit()
 
@@ -96,7 +96,7 @@ while True:
 
     # --- Salida: ESC o #fotos finalizado ---
     k = cv2.waitKey(1)
-    if k == 27 or count >= 200:
+    if k == 27 or count >= 500:
         break
 
 cap.release()
