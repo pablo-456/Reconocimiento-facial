@@ -17,6 +17,7 @@ face_recognizer.read("modeloLBPHFace.xml")
 
 # --- Parámetros de confiabilidad ---
 UMBRAL_CONFIANZA = 60   # cuanto menor, más estricto
+
 # ==============================================================
 #  OPCIONES DE CÁMARA
 # ==============================================================
@@ -137,6 +138,7 @@ while True:
     k = cv2.waitKey(1)
     if k == 27:
         break
+    
 
 cap.release()
 cv2.destroyAllWindows()

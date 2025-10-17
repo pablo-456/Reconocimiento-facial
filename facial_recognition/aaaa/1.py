@@ -16,7 +16,7 @@ personas = db["personas"]
 # cap = cv2.VideoCapture(0)
 
 # 2️⃣ Cámara externa USB (por ejemplo, iPhone con Iriun o EpocCam por cable)
-cap = cv2.VideoCapture(1)  # o prueba con 2 si hay varias cámaras
+cap = cv2.VideoCapture(0)  # o prueba con 2 si hay varias cámaras
 
 # 3️⃣ Cámara del iPhone por Wi-Fi (modo IP Webcam o Iriun Wi-Fi)
 #     Abre la app en tu iPhone y revisa la IP que muestra, por ejemplo:
@@ -46,7 +46,6 @@ if persona_existente and "rostros" in persona_existente and len(persona_existent
     exit()
 
 # --- Activar cámara ---
-cap = cv2.VideoCapture(1)
 if not cap.isOpened():
     print("Error: no se pudo acceder a la cámara.")
     exit()
