@@ -8,31 +8,20 @@ db = client["rostrosDB"]
 personas = db["personas"]
 
 
-# ==============================================================
-#  OPCIONES DE CÁMARA
-# ==============================================================
+#---   OPCIONES DE CÁMARA ---
 
 # 1️⃣ Cámara del PC (predeterminada)
 # cap = cv2.VideoCapture(0)
 
 # 2️⃣ Cámara externa USB (por ejemplo, iPhone con Iriun o EpocCam por cable)
-cap = cv2.VideoCapture(0)  # o prueba con 2 si hay varias cámaras
-
-# 3️⃣ Cámara del iPhone por Wi-Fi (modo IP Webcam o Iriun Wi-Fi)
-#     Abre la app en tu iPhone y revisa la IP que muestra, por ejemplo:
-#     "http://192.168.1.5:4747/video"
-#     Cambia la IP de abajo por la tuya
-#cap = cv2.VideoCapture("http://172.20.10.1:8080/video")
-
-
-# ==============================================================
+cap = cv2.VideoCapture(2)  # o prueba con 2 si hay varias cámaras
 
 # --- Verificación de la cámara ---
 if not cap.isOpened():
     print("Error: no se pudo acceder a la cámara. Verifique la conexión o IP.")
     exit()
 
-# --- Ajustar resolución (opcional) ---
+# --- Ajustar resolución ---
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
 
