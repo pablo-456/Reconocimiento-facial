@@ -6,6 +6,7 @@ import numpy as np
 import sys
 import os
 
+
 # --- Conexión a MongoDB ---
 client = MongoClient("mongodb://localhost:27017/")
 db = client["rostrosDB"]

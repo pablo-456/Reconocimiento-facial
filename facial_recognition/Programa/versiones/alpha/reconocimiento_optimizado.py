@@ -52,6 +52,7 @@ cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
 frontal_face = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
 profile_face = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_profileface.xml")
 
+
 # ============================================================
 # Variables de estado
 # ============================================================

@@ -6,6 +6,7 @@ import sys
 import os
 from pymongo import MongoClient
 
+
 # ---------------- CONFIGURACIÓN MONGO ----------------
 try:
     client = MongoClient("mongodb://localhost:27017/")
