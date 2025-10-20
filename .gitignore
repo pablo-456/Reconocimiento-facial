@@ -4,10 +4,13 @@ tf-env/
 # Ignorar cachés de Python
 __pycache__/
 *.pyc
+# Ignorar modelo LBPH
+modeloLBPHFace.xml
 
 # ===============================
 # 🧠 ARCHIVOS DE MODELOS Y PESADOS
 # ===============================
+*.npy
 *.xml
 *.yml
 *.dat
