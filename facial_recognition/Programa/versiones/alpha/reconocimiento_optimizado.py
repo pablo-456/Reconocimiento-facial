@@ -37,7 +37,13 @@ FPS_DISPLAY_SMOOTH = 0.9
 # ============================================================
 # Inicializar cámara
 # ============================================================
-cap = cv2.VideoCapture(0)
+# --- OPCIONES DE CÁMARA ---
+# 1️⃣ Cámara del PC (predeterminada)
+#cap = cv2.VideoCapture(0)
+
+# 2️⃣ Cámara externa USB (por ejemplo, iPhone con Iriun o EpocCam por cable)
+cap = cv2.VideoCapture(2)  # o prueba con 2 si hay varias cámaras
+
 if not cap.isOpened():
     print("Error: no se pudo acceder a la cámara.")
     sys.exit(1)

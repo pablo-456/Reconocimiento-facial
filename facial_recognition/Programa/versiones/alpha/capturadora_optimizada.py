@@ -14,10 +14,10 @@ personas = db["personas"]
 
 # --- OPCIONES DE CÁMARA ---
 # 1️⃣ Cámara del PC (predeterminada)
-cap = cv2.VideoCapture(0)
+#cap = cv2.VideoCapture(0)
 
 # 2️⃣ Cámara externa USB (por ejemplo, iPhone con Iriun o EpocCam por cable)
-#cap = cv2.VideoCapture(2)  # o prueba con 2 si hay varias cámaras
+cap = cv2.VideoCapture(2)  # o prueba con 2 si hay varias cámaras
 
 # --- Verificación de la cámara ---
 if not cap.isOpened():
@@ -62,7 +62,7 @@ frontal_face = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_fronta
 profile_face = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_profileface.xml')
 
 count = 0
-Maxfotos = 500
+Maxfotos = 400
 
 # --- FaceMesh (Mediapipe) ---
 mp_face_mesh = mp.solutions.face_mesh

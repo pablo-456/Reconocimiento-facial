@@ -25,8 +25,8 @@ def centrar_ventana(ventana, ancho, alto):
     ventana.geometry(f"{ancho}x{alto}+{x}+{y}")
 
 # Ruta del programa: Indica la direccion completa donde se ubican los scripts
-RUTA_BASE = r"D:\info\programasao\Universidad\TRABAJOS FINALES\Trabajo final_IntegracionDeAplicaciones\facial_recognition\Programa\versiones\alpha"
-
+#RUTA_BASE = r"D:\info\programasao\Universidad\TRABAJOS FINALES\Trabajo final_IntegracionDeAplicaciones\facial_recognition\Programa\versiones\alpha"
+RUTA_BASE = r"C:\Proyectos\Reconocimiento-facial\facial_recognition\Programa\versiones\alpha"
 
 def abrir_menu_principal():
     """Reabre el menú principal."""
