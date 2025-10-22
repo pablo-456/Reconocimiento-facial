@@ -39,10 +39,10 @@ FPS_DISPLAY_SMOOTH = 0.9
 # ============================================================
 # --- OPCIONES DE CÁMARA ---
 # 1️⃣ Cámara del PC (predeterminada)
-#cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(0)
 
 # 2️⃣ Cámara externa USB (por ejemplo, iPhone con Iriun o EpocCam por cable)
-cap = cv2.VideoCapture(2)  # o prueba con 2 si hay varias cámaras
+#cap = cv2.VideoCapture(2)  # o prueba con 2 si hay varias cámaras
 
 if not cap.isOpened():
     print("Error: no se pudo acceder a la cámara.")
@@ -88,6 +88,9 @@ def to_list_of_tuples(detect):
 # ------------------------------------------------------------
 # Bucle principal
 # ------------------------------------------------------------
+frames_estables = 0
+ultima_persona = None
+frames_sin_reconocer = 0
 while True:
     ret, frame = cap.read()
     if not ret:
@@ -153,6 +156,49 @@ while True:
             name = imagePaths[label]
         else:
             name = "Desconocido"
+        
+        #-------------------------------------
+        #---MENSAJE DE DETECCION DE USUARIO---
+        #-------------------------------------
+
+        if name != "Desconocido":
+            if name == ultima_persona:
+                frames_estables += 1
+            else:
+                frames_estables = 1
+                ultima_persona = name
+
+            # Si la persona ha sido reconocida durante varios frames seguidos
+            if frames_estables >= 20:  # puedes ajustar el número si quieres que sea más rápido
+                print(f"✅ Acceso autorizado para: {name}")
+                cv2.putText(frame, f"ACCESO AUTORIZADO: {name}", (50, 50),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+                cv2.imshow("Reconocimiento Facial (corregido)", frame)
+                cv2.waitKey(2000)  # espera 2 segundos mostrando el mensaje
+                cap.release()
+                cv2.destroyAllWindows()
+                sys.exit(0)
+        else:
+            frames_estables = 0
+            ultima_persona = None
+
+        # --- Control cuando no se reconoce a nadie ---
+        if stable_name == "Desconocido":
+            frames_sin_reconocer += 1
+        else:
+            frames_sin_reconocer = 0
+
+        # Si han pasado muchos cuadros sin reconocimiento
+        if frames_sin_reconocer >= 100:  # aprox 5 segundos si la cámara corre a ~20fps
+            print("⚠️ Persona no reconocida")
+            cv2.putText(frame, "PERSONA NO RECONOCIDA", (30, 80),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.7, (50, 50, 255), 2)
+            cv2.imshow("Reconocimiento Facial (corregido)", frame)
+            cv2.waitKey(4000)  # muestra el mensaje 4 segundos
+            cap.release()
+            cv2.destroyAllWindows()
+            sys.exit(0)
+
 
         # Actualizar memoria temporal (decay implícito más abajo)
         name_memory[name] = name_memory.get(name, 0) + 1
@@ -165,7 +211,7 @@ while True:
         cv2.rectangle(frame, (x, y), (x + w, y + h), color, 2)
         cv2.putText(frame, f"{stable_name} ({confidence:.1f})", (x, y - 8),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
-
+        
     # Decaimiento ligero de name_memory para evitar saturación
     # (reduce todos los contadores en 1 cada 30 frames)
     if frame_count % 30 == 0:
@@ -184,6 +230,30 @@ while True:
     cv2.putText(frame, f"FPS: {fps_display:.1f}", (10, 25), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (200, 200, 200), 2)
 
     cv2.imshow("Reconocimiento Facial (corregido)", frame)
+
+    # --- Centrar la ventana de OpenCV ---
+    if frame_count == 1:  # solo la primera vez
+        window_name = "Reconocimiento Facial (corregido)"
+        cv2.namedWindow(window_name, cv2.WINDOW_NORMAL)  # permite mover/redimensionar
+        cv2.imshow(window_name, frame)
+
+        # Obtener tamaño real de pantalla con Tkinter
+        import tkinter as tk
+        root_tk = tk.Tk()
+        screen_width = root_tk.winfo_screenwidth()
+        screen_height = root_tk.winfo_screenheight()
+        root_tk.destroy()
+
+        # Obtener tamaño real de la ventana de OpenCV (basado en el frame)
+        win_w = frame.shape[1]
+        win_h = frame.shape[0]
+
+        # Calcular coordenadas para centrar correctamente
+        x = max((screen_width - win_w) // 2, 0)
+        y = max((screen_height - win_h) // 2, 0)
+
+        # Mover la ventana
+        cv2.moveWindow(window_name, x, y)
 
     # manejo de tecla (no bloquear con sleep)
     key = cv2.waitKey(1) & 0xFF
