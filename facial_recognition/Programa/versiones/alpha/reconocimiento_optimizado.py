@@ -91,13 +91,14 @@ def to_list_of_tuples(detect):
 frames_estables = 0
 ultima_persona = None
 frames_sin_reconocer = 0
+
 while True:
     ret, frame = cap.read()
     if not ret:
         print("Error al leer la cámara.")
         break
 
-    # reducir tamaño para procesar menos pixeles
+    # Reducir tamaño para procesar menos pixeles
     frame = cv2.resize(frame, (RESIZE_WIDTH, int(frame.shape[0] * RESIZE_WIDTH / frame.shape[1])))
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     frame_count += 1
@@ -123,32 +124,27 @@ while True:
 
             detected_faces = faces_left + faces_right
 
-        # actualizar cache
+        # Actualizar cache
         prev_faces = detected_faces
     else:
-        # reutilizar última detección para no volver a costear detectMultiScale
         detected_faces = prev_faces or []
 
     # Reconocimiento sobre las detecciones
     for (x, y, w, h) in detected_faces:
-        # asegurarse de que las coordenadas estén dentro del frame
         x = max(0, x); y = max(0, y)
         w = max(1, w); h = max(1, h)
         if x + w > gray.shape[1] or y + h > gray.shape[0]:
             continue
 
         rostro = gray[y:y+h, x:x+w]
-        # proteger contra recortes vacíos
         if rostro.size == 0:
             continue
 
         rostro_resized = cv2.resize(rostro, (150, 150), interpolation=cv2.INTER_AREA)
 
-        # predict (esto es lo más costoso)
         try:
             label, confidence = face_recognizer.predict(rostro_resized)
         except Exception as e:
-            # en caso de fallo en predict, continuar
             print("Predict error:", e)
             continue
 
@@ -156,11 +152,10 @@ while True:
             name = imagePaths[label]
         else:
             name = "Desconocido"
-        
-        #-------------------------------------
-        #---MENSAJE DE DETECCION DE USUARIO---
-        #-------------------------------------
 
+        # -------------------------------------
+        # --- MENSAJE DE DETECCIÓN DE USUARIO ---
+        # -------------------------------------
         if name != "Desconocido":
             if name == ultima_persona:
                 frames_estables += 1
@@ -169,15 +164,15 @@ while True:
                 ultima_persona = name
 
             # Si la persona ha sido reconocida durante varios frames seguidos
-            if frames_estables >= 20:  # puedes ajustar el número si quieres que sea más rápido
+            if frames_estables >= 20:
                 print(f"✅ Acceso autorizado para: {name}")
                 cv2.putText(frame, f"ACCESO AUTORIZADO: {name}", (50, 50),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
                 cv2.imshow("Reconocimiento Facial (corregido)", frame)
-                cv2.waitKey(2000)  # espera 2 segundos mostrando el mensaje
-                cap.release()
-                cv2.destroyAllWindows()
-                sys.exit(0)
+                cv2.waitKey(2000)  # muestra 2 segundos el mensaje
+                frames_estables = 0
+                ultima_persona = None
+                continue
         else:
             frames_estables = 0
             ultima_persona = None
@@ -188,32 +183,26 @@ while True:
         else:
             frames_sin_reconocer = 0
 
-        # Si han pasado muchos cuadros sin reconocimiento
-        if frames_sin_reconocer >= 100:  # aprox 5 segundos si la cámara corre a ~20fps
+        if frames_sin_reconocer >= 100:
             print("⚠️ Persona no reconocida")
             cv2.putText(frame, "PERSONA NO RECONOCIDA", (30, 80),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.7, (50, 50, 255), 2)
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.6, (50, 50, 255), 2)
             cv2.imshow("Reconocimiento Facial (corregido)", frame)
-            cv2.waitKey(4000)  # muestra el mensaje 4 segundos
-            cap.release()
-            cv2.destroyAllWindows()
-            sys.exit(0)
+            cv2.waitKey(2000)  # muestra 2 segundos el mensaje
+            frames_sin_reconocer = 0
+            continue
 
-
-        # Actualizar memoria temporal (decay implícito más abajo)
+        # Actualizar memoria temporal
         name_memory[name] = name_memory.get(name, 0) + 1
-
-        # Si un nombre alcanza umbral de estabilidad, fijarlo
         if name_memory.get(name, 0) > 5:
             stable_name = name
 
         color = (0, 255, 0) if stable_name != "Desconocido" else (0, 0, 255)
         cv2.rectangle(frame, (x, y), (x + w, y + h), color, 2)
         cv2.putText(frame, f"{stable_name} ({confidence:.1f})", (x, y - 8),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
-        
-    # Decaimiento ligero de name_memory para evitar saturación
-    # (reduce todos los contadores en 1 cada 30 frames)
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
+
+    # Decaimiento ligero de memoria
     if frame_count % 30 == 0:
         keys = list(name_memory.keys())
         for k in keys:
@@ -227,40 +216,34 @@ while True:
     instant_fps = 1.0 / elapsed
     fps_display = FPS_DISPLAY_SMOOTH * fps_display + (1 - FPS_DISPLAY_SMOOTH) * instant_fps
     last_time = now
-    cv2.putText(frame, f"FPS: {fps_display:.1f}", (10, 25), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (200, 200, 200), 2)
+    cv2.putText(frame, f"FPS: {fps_display:.1f}", (10, 25),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (200, 200, 200), 2)
 
+    # Mostrar frame
     cv2.imshow("Reconocimiento Facial (corregido)", frame)
 
-    # --- Centrar la ventana de OpenCV ---
-    if frame_count == 1:  # solo la primera vez
+    # --- Centrar ventana al inicio ---
+    if frame_count == 1:
         window_name = "Reconocimiento Facial (corregido)"
-        cv2.namedWindow(window_name, cv2.WINDOW_NORMAL)  # permite mover/redimensionar
+        cv2.namedWindow(window_name, cv2.WINDOW_NORMAL)
         cv2.imshow(window_name, frame)
-
-        # Obtener tamaño real de pantalla con Tkinter
         import tkinter as tk
         root_tk = tk.Tk()
         screen_width = root_tk.winfo_screenwidth()
         screen_height = root_tk.winfo_screenheight()
         root_tk.destroy()
-
-        # Obtener tamaño real de la ventana de OpenCV (basado en el frame)
         win_w = frame.shape[1]
         win_h = frame.shape[0]
-
-        # Calcular coordenadas para centrar correctamente
         x = max((screen_width - win_w) // 2, 0)
         y = max((screen_height - win_h) // 2, 0)
-
-        # Mover la ventana
         cv2.moveWindow(window_name, x, y)
 
-    # manejo de tecla (no bloquear con sleep)
+    # Salir con ESC
     key = cv2.waitKey(1) & 0xFF
     if key == 27:
         break
 
-# liberar recursos
+# Liberar recursos
 cap.release()
 cv2.destroyAllWindows()
 print("Reconocimiento finalizado.")
