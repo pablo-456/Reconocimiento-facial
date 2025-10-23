@@ -24,9 +24,10 @@ def centrar_ventana(ventana, ancho, alto):
     y = (ventana.winfo_screenheight() // 2) - (alto // 2)
     ventana.geometry(f"{ancho}x{alto}+{x}+{y}")
 
-# Ruta del programa: Indica la direccion completa donde se ubican los scripts
-RUTA_BASE = r"D:\info\programasao\Universidad\TRABAJOS FINALES\Trabajo final_IntegracionDeAplicaciones\facial_recognition\Programa\versiones\alpha"
-#RUTA_BASE = r"C:\Proyectos\Reconocimiento-facial\facial_recognition\Programa\versiones\alpha"
+# ---------------- RUTA BASE RELATIVA ----------------
+# Detecta automáticamente la carpeta donde está este archivo .py
+RUTA_BASE = os.path.dirname(os.path.abspath(__file__))
+#RUTA_BASE = r"D:\info\programasao\Universidad\TRABAJOS FINALES\Trabajo final_IntegracionDeAplicaciones\facial_recognition\Programa\versiones\alpha"
 
 def abrir_menu_principal():
     """Reabre el menú principal."""
