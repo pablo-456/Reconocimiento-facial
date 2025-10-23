@@ -27,7 +27,6 @@ def centrar_ventana(ventana, ancho, alto):
 # ---------------- RUTA BASE RELATIVA ----------------
 # Detecta automáticamente la carpeta donde está este archivo .py
 RUTA_BASE = os.path.dirname(os.path.abspath(__file__))
-#RUTA_BASE = r"D:\info\programasao\Universidad\TRABAJOS FINALES\Trabajo final_IntegracionDeAplicaciones\facial_recognition\Programa\versiones\alpha"
 
 def abrir_menu_principal():
     """Reabre el menú principal."""
