@@ -28,12 +28,6 @@ modeloLBPHFace.xml
 *.gz
 *.7z
 
-# Carpeta local de modelos (no versionar)
-modelos/
-modelos_entrenados/
-datasets/
-backups/
-
 # ===============================
 # 🐍 PYTHON
 # ===============================
