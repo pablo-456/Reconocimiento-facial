@@ -9,23 +9,25 @@ from pymongo import MongoClient
 
 # --- Conexión directa a MongoDB ---
 try:
-    cliente = MongoClient("mongodb://localhost:27017/")  # Cambia si usas otro host o puerto
-    db = cliente["registro_usuarios"]  # Nombre de tu base de datos
-    usuarios_collection = db["usuarios"]  # Nombre de tu colección
+    cliente = MongoClient("mongodb://localhost:27017/")
+    db = cliente["rostrosDB"]
+    usuarios_collection = db["personas"]
 except Exception as e:
     print("❌ Error al conectar con MongoDB:", e)
     usuarios_collection = None
 
+
 def registrar_rostro(root, abrir_menu_principal):
-    # Ocultar ventana principal
-    # Configuración de ventana (pantalla completa)
-    
+    # Ocultar la ventana principal
+    root.withdraw()
+
+    # Crear ventana registro
     ventana_registro = tk.Toplevel(root)
     ventana_registro.title("Registro de Usuario")
     ventana_registro.configure(bg="#a6c7e9")
     ventana_registro.attributes("-fullscreen", True)
-    
-    # ---------- CONTENEDOR CENTRAL (más grande) ----------
+
+    # ---------- CONTENEDOR CENTRAL ----------
     frame_central = tk.Frame(
         ventana_registro,
         bg="white",
@@ -67,7 +69,7 @@ def registrar_rostro(root, abrir_menu_principal):
     crear_campo("C.C / Identificación:", cc_var)
     crear_campo("Nombre completo:", nombre_var)
 
-     # ---------- COMBOBOX ----------
+    # ---------- COMBOBOX ----------
     tk.Label(
         frame_central, text="Programa de estudio:",
         font=("Segoe UI", 13, "bold"),
@@ -82,7 +84,6 @@ def registrar_rostro(root, abrir_menu_principal):
         "Derecho",
     ]
 
-        # --- Estilo personalizado del Combobox ---
     estilo_combo = ttk.Style()
     estilo_combo.theme_use("clam")
     estilo_combo.configure(
@@ -90,23 +91,15 @@ def registrar_rostro(root, abrir_menu_principal):
         fieldbackground="white",
         background="white",
         bordercolor="black",
-        lightcolor="black",
-        darkcolor="black",
         arrowcolor="black",
         foreground="black",
-        selectbackground="white",
-        selectforeground="black",
         font=("Segoe UI", 13)
     )
-    # Evitar el sombreado azul al seleccionar
     estilo_combo.map(
         "Custom.TCombobox",
         fieldbackground=[("readonly", "white")],
-        foreground=[("readonly", "black")],
-        selectbackground=[("readonly", "white")],
-        selectforeground=[("readonly", "black")]
+        foreground=[("readonly", "black")]
     )
-
 
     programa_combo = ttk.Combobox(
         frame_central,
@@ -143,7 +136,7 @@ def registrar_rostro(root, abrir_menu_principal):
     btn_iniciar = tk.Button(
         frame_central,
         text="Iniciar Registro",
-        bg="#1a73e8",     # Azul fuerte
+        bg="#1a73e8",
         fg="black",
         font=("Segoe UI", 13, "bold"),
         width=15, height=1,
@@ -156,11 +149,15 @@ def registrar_rostro(root, abrir_menu_principal):
     estilo_boton(btn_iniciar, "#1a73e8", "#1558a6")
 
     # ---------- BOTÓN VOLVER ----------
+    def volver_menu_admin():
+        ventana_registro.destroy()
+        root.deiconify()  # Muestra el menú admin al instante
+
     btn_volver = tk.Button(
         frame_central,
         text="Volver al Menú",
-        command=lambda: [abrir_menu_principal(), ventana_registro.destroy()],
-        bg="#c62828",     # Rojo fuerte
+        command=volver_menu_admin,
+        bg="#c62828",
         fg="black",
         font=("Segoe UI", 13, "bold"),
         width=15, height=1,
@@ -169,11 +166,10 @@ def registrar_rostro(root, abrir_menu_principal):
         highlightbackground="#000000",
         cursor="hand2"
     )
-    
     btn_volver.pack(pady=(10, 20))
     estilo_boton(btn_volver, "#c62828", "#a31818")
 
-    # ---- Función de registro ----
+    # ---- FUNCIÓN DE REGISTRO ----
     def iniciar_registro():
         cc = cc_var.get().strip()
         nombre = nombre_var.get().strip()
@@ -213,17 +209,13 @@ def registrar_rostro(root, abrir_menu_principal):
                 messagebox.showerror("Error", f"Error al guardar en MongoDB:\n{db_error}")
             finally:
                 ventana_registro.destroy()
-                abrir_menu_principal()
+                root.deiconify()  # vuelve al menú admin al terminar
 
         threading.Thread(target=ejecutar_script).start()
 
     btn_iniciar.config(command=iniciar_registro)
-    
-    
-    # --- Forzar que la ventana se dibuje y se muestre encima del root ---
-    ventana_registro.update()
-    ventana_registro.lift()          # Traer al frente
-    ventana_registro.focus_force()   # Dar foco a la ventana
 
-    # Ocultar root **después de que todo se haya dibujado**
-    root.withdraw()
+    # --- Mostrar correctamente ---
+    ventana_registro.update()
+    ventana_registro.lift()
+    ventana_registro.focus_force()
