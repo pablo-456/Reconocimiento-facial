@@ -56,21 +56,21 @@ def mostrar_menu_admin(root_principal):
         root_admin, "Usuarios", lambda: ver_inventario(root_admin, lambda: None),
         color_fondo="#ffffff", color_hover="#f2f2f2", color_texto="black",
         fuente=("Arial", 14, "bold"),
-        relx=0.5, rely=0.45, ancho=62, alto=2
+        relx=0.5, rely=0.45, ancho=69, alto=2
     )
 
     crear_boton(
         root_admin, "Registrar persona", lambda: registrar_rostro(root_admin, lambda: None),
         color_fondo="#ffffff", color_hover="#f2f2f2", color_texto="black",
         fuente=("Arial", 14, "bold"),
-        relx=0.5, rely=0.59, ancho=62, alto=2
+        relx=0.5, rely=0.59, ancho=69, alto=2
     )
 
     crear_boton(
         root_admin, "Movimientos", lambda: None,
         color_fondo="#ffffff", color_hover="#f2f2f2", color_texto="black",
         fuente=("Arial", 14, "bold"),
-        relx=0.5, rely=0.73, ancho=62, alto=2
+        relx=0.5, rely=0.73, ancho=69, alto=2
     )
 
     def volver_menu_principal():

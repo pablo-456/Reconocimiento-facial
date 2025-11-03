@@ -60,14 +60,14 @@ btn_verificacion = crear_boton(
     root, "ENTRAR", lambda: reconocer_rostro(lambda: None),
     color_fondo="#4cc9f0", color_hover="#72d6f9", color_texto="black",
     fuente=("Arial", 14, "bold"),
-    relx=0.833, rely=0.475, ancho=25, alto=2
+    relx=0.833, rely=0.475, ancho=28, alto=2
 )
 
 btn_admin = crear_boton(
     root, "ENTRAR", abrir_menu_admin,
     color_fondo="#1b6fd0", color_hover="#3b83e3", color_texto="black",
     fuente=("Arial", 14, "bold"),
-    relx=0.833, rely=0.775, ancho=25, alto=2
+    relx=0.833, rely=0.775, ancho=28, alto=2
 )
 
 btn_salir = crear_boton(
