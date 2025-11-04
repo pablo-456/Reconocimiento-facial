@@ -3,13 +3,14 @@ import os
 from PIL import Image, ImageTk
 from utilidades import RUTA_BASE
 from reconocimiento_vista import reconocer_rostro
-import menu_administrador  # 👈 Importamos el otro módulo directamente
+import menu_administrador  # Menú admin
+import login_vista         # 👈 Importamos el login
 
 
-def abrir_menu_admin():
-    # Oculta la ventana actual y abre el menú de administrador
-    root.withdraw()
-    menu_administrador.mostrar_menu_admin(root)
+def abrir_login():
+    """Oculta el menú principal y abre la ventana de login"""
+    root.withdraw()  # Oculta el menú principal
+    login_vista.mostrar_login(root)  # 👈 Le pasamos el root para poder volver después
 
 
 # ---------------- MENÚ PRINCIPAL ----------------
@@ -26,6 +27,7 @@ fondo_tk = ImageTk.PhotoImage(imagen_fondo)
 
 label_fondo = tk.Label(root, image=fondo_tk)
 label_fondo.place(x=0, y=0, relwidth=1, relheight=1)
+
 
 def crear_boton(root, texto, comando, color_fondo, color_hover, color_texto, fuente, relx, rely, ancho, alto):
     btn = tk.Button(
@@ -56,6 +58,7 @@ def crear_boton(root, texto, comando, color_fondo, color_hover, color_texto, fue
     return btn
 
 
+# --- Botones ---
 btn_verificacion = crear_boton(
     root, "ENTRAR", lambda: reconocer_rostro(lambda: None),
     color_fondo="#4cc9f0", color_hover="#72d6f9", color_texto="black",
@@ -64,7 +67,7 @@ btn_verificacion = crear_boton(
 )
 
 btn_admin = crear_boton(
-    root, "ENTRAR", abrir_menu_admin,
+    root, "ENTRAR", abrir_login,  # 👈 Cambiamos a login
     color_fondo="#1b6fd0", color_hover="#3b83e3", color_texto="black",
     fuente=("Arial", 14, "bold"),
     relx=0.833, rely=0.775, ancho=28, alto=2

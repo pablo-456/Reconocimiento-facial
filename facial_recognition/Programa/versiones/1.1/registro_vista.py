@@ -4,6 +4,7 @@ import subprocess
 import threading
 import sys
 import os
+import re
 from utilidades import RUTA_BASE
 from pymongo import MongoClient
 
@@ -95,11 +96,6 @@ def registrar_rostro(root, abrir_menu_principal):
         foreground="black",
         font=("Segoe UI", 13)
     )
-    estilo_combo.map(
-        "Custom.TCombobox",
-        fieldbackground=[("readonly", "white")],
-        foreground=[("readonly", "black")]
-    )
 
     programa_combo = ttk.Combobox(
         frame_central,
@@ -169,6 +165,18 @@ def registrar_rostro(root, abrir_menu_principal):
     btn_volver.pack(pady=(10, 20))
     estilo_boton(btn_volver, "#c62828", "#a31818")
 
+    # ---- VALIDACIONES ----
+    def validar_campos(cc, nombre):
+        # Validar identificación: solo números y al menos 6 dígitos
+        if not re.fullmatch(r"\d{6,}", cc):
+            messagebox.showwarning("Advertencia", "La identificación debe contener solo números y al menos 6 dígitos.")
+            return False
+        # Validar nombre: solo letras y espacios, mínimo 8 letras
+        if not re.fullmatch(r"[A-Za-zÁÉÍÓÚáéíóúñÑ ]{8,}", nombre):
+            messagebox.showwarning("Advertencia", "El nombre debe contener solo letras y tener mínimo 8 caracteres.")
+            return False
+        return True
+
     # ---- FUNCIÓN DE REGISTRO ----
     def iniciar_registro():
         cc = cc_var.get().strip()
@@ -177,6 +185,9 @@ def registrar_rostro(root, abrir_menu_principal):
 
         if not cc or not nombre or programa == "Seleccione un programa":
             messagebox.showwarning("Advertencia", "Debe completar todos los campos.")
+            return
+
+        if not validar_campos(cc, nombre):
             return
 
         if usuarios_collection.find_one({"cc": cc}):
