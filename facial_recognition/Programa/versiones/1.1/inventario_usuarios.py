@@ -1,6 +1,10 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 from pymongo import MongoClient
+from PIL import Image, ImageTk
+import os
+from utilidades import RUTA_BASE  # ✅ Igual que en tu login
+
 
 # --- Conexión directa a MongoDB ---
 try:
@@ -21,6 +25,26 @@ def ver_inventario(root, abrir_menu_principal):
     ventana_inv.title("Inventario de Usuarios")
     ventana_inv.configure(bg="#a6c7e9")
     ventana_inv.attributes("-fullscreen", True)
+
+    # ---------- 💠 IMAGEN DE FONDO (usando RUTA_BASE + carpeta imagenes) ----------
+    try:
+        # Obtener tamaño de pantalla
+        sw = ventana_inv.winfo_screenwidth()
+        sh = ventana_inv.winfo_screenheight()
+
+        # Ruta absoluta de la imagen base
+        ruta_fondo = os.path.join(RUTA_BASE, "imagenes", "base_usuario.png")
+
+        # Cargar y redimensionar
+        img = Image.open(ruta_fondo)
+        img = img.resize((sw, sh))
+        fondo_img = ImageTk.PhotoImage(img)
+
+        fondo_label = tk.Label(ventana_inv, image=fondo_img)
+        fondo_label.image = fondo_img  # evitar recolección
+        fondo_label.place(x=0, y=0, relwidth=1, relheight=1)
+    except Exception as e:
+        print(f"⚠️ No se pudo cargar la imagen de fondo: {e}")
 
     # ---------- CONTENEDOR CENTRAL ----------
     frame_central = tk.Frame(
@@ -146,9 +170,8 @@ def ver_inventario(root, abrir_menu_principal):
         widget.bind("<Leave>", on_leave)
 
     # ---------- BOTÓN VOLVER ----------
-
     btn_volver = tk.Button(
-        ventana_inv,  # 👈 lo movemos a la ventana principal, no al frame central
+        ventana_inv,  # 👈 colocado sobre la ventana principal
         text="Volver al menú principal",
         command=volver_menu_admin,
         bg="#c62828",
@@ -161,7 +184,7 @@ def ver_inventario(root, abrir_menu_principal):
         cursor="hand2",
         highlightthickness=0
     )
-    btn_volver.place(relx=0.5, rely=0.93, anchor="center")  # 👈 se coloca abajo centrado
+    btn_volver.place(relx=0.5, rely=0.93, anchor="center")  # 👈 centrado al fondo
     estilo_boton(btn_volver, "#c62828", "#ff6b6b")
 
     ventana_inv.protocol("WM_DELETE_WINDOW", volver_menu_admin)

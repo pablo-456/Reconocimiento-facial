@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
+from PIL import Image, ImageTk
 import subprocess
 import threading
 import sys
@@ -19,14 +20,31 @@ except Exception as e:
 
 
 def registrar_rostro(root, abrir_menu_principal):
-    # Ocultar la ventana principal
+    # Ocultar ventana principal
     root.withdraw()
 
-    # Crear ventana registro
+    # Crear ventana de registro
     ventana_registro = tk.Toplevel(root)
     ventana_registro.title("Registro de Usuario")
     ventana_registro.configure(bg="#a6c7e9")
     ventana_registro.attributes("-fullscreen", True)
+
+    # --- Imagen de fondo con manejo de errores ---
+    ancho_pantalla = ventana_registro.winfo_screenwidth()
+    alto_pantalla = ventana_registro.winfo_screenheight()
+
+    try:
+        ruta_imagen = os.path.join(RUTA_BASE, "imagenes", "base.png")
+        imagen_fondo = Image.open(ruta_imagen)
+        imagen_fondo = imagen_fondo.resize((ancho_pantalla, alto_pantalla))
+        fondo_tk = ImageTk.PhotoImage(imagen_fondo)
+
+        label_fondo = tk.Label(ventana_registro, image=fondo_tk)
+        label_fondo.image = fondo_tk
+        label_fondo.place(x=0, y=0, relwidth=1, relheight=1)
+    except Exception as e:
+        print(f"⚠️ No se pudo cargar la imagen de fondo 'base.png': {e}")
+        ventana_registro.configure(bg="#a6c7e9")  # color plano si no hay imagen
 
     # ---------- CONTENEDOR CENTRAL ----------
     frame_central = tk.Frame(
@@ -121,63 +139,22 @@ def registrar_rostro(root, abrir_menu_principal):
 
     # ---------- FUNCIÓN ESTILO BOTONES ----------
     def estilo_boton(widget, color_base, color_hover):
-        def on_enter(e):
-            widget.config(bg=color_hover)
-        def on_leave(e):
-            widget.config(bg=color_base)
+        def on_enter(e): widget.config(bg=color_hover)
+        def on_leave(e): widget.config(bg=color_base)
         widget.bind("<Enter>", on_enter)
         widget.bind("<Leave>", on_leave)
 
-    # ---------- BOTÓN INICIAR ----------
-    btn_iniciar = tk.Button(
-        frame_central,
-        text="Iniciar Registro",
-        bg="#1a73e8",
-        fg="black",
-        font=("Segoe UI", 13, "bold"),
-        width=15, height=1,
-        relief="solid",
-        bd=2,
-        highlightbackground="#000000",
-        cursor="hand2"
-    )
-    btn_iniciar.pack(pady=(20, 10))
-    estilo_boton(btn_iniciar, "#1a73e8", "#1558a6")
-
-    # ---------- BOTÓN VOLVER ----------
-    def volver_menu_admin():
-        ventana_registro.destroy()
-        root.deiconify()  # Muestra el menú admin al instante
-
-    btn_volver = tk.Button(
-        frame_central,
-        text="Volver al Menú",
-        command=volver_menu_admin,
-        bg="#c62828",
-        fg="black",
-        font=("Segoe UI", 13, "bold"),
-        width=15, height=1,
-        relief="solid",
-        bd=2,
-        highlightbackground="#000000",
-        cursor="hand2"
-    )
-    btn_volver.pack(pady=(10, 20))
-    estilo_boton(btn_volver, "#c62828", "#a31818")
-
-    # ---- VALIDACIONES ----
+    # ---------- FUNCIÓN DE VALIDACIÓN ----------
     def validar_campos(cc, nombre):
-        # Validar identificación: solo números y al menos 6 dígitos
         if not re.fullmatch(r"\d{6,}", cc):
             messagebox.showwarning("Advertencia", "La identificación debe contener solo números y al menos 6 dígitos.")
             return False
-        # Validar nombre: solo letras y espacios, mínimo 8 letras
         if not re.fullmatch(r"[A-Za-zÁÉÍÓÚáéíóúñÑ ]{8,}", nombre):
             messagebox.showwarning("Advertencia", "El nombre debe contener solo letras y tener mínimo 8 caracteres.")
             return False
         return True
 
-    # ---- FUNCIÓN DE REGISTRO ----
+    # ---------- FUNCIÓN DE REGISTRO ----------
     def iniciar_registro():
         cc = cc_var.get().strip()
         nombre = nombre_var.get().strip()
@@ -220,13 +197,46 @@ def registrar_rostro(root, abrir_menu_principal):
                 messagebox.showerror("Error", f"Error al guardar en MongoDB:\n{db_error}")
             finally:
                 ventana_registro.destroy()
-                root.deiconify()  # vuelve al menú admin al terminar
+                root.deiconify()
 
         threading.Thread(target=ejecutar_script).start()
 
-    btn_iniciar.config(command=iniciar_registro)
+    # ---------- BOTONES ----------
+    btn_iniciar = tk.Button(
+        frame_central,
+        text="Iniciar Registro",
+        command=iniciar_registro,
+        bg="#1a73e8",
+        fg="white",
+        font=("Segoe UI", 13, "bold"),
+        width=15, height=1,
+        relief="solid",
+        bd=2,
+        cursor="hand2"
+    )
+    btn_iniciar.pack(pady=(20, 10))
+    estilo_boton(btn_iniciar, "#1a73e8", "#1558a6")
 
-    # --- Mostrar correctamente ---
+    def volver_menu_admin():
+        ventana_registro.destroy()
+        root.deiconify()
+
+    btn_volver = tk.Button(
+        frame_central,
+        text="Volver al Menú",
+        command=volver_menu_admin,
+        bg="#c62828",
+        fg="white",
+        font=("Segoe UI", 13, "bold"),
+        width=15, height=1,
+        relief="solid",
+        bd=2,
+        cursor="hand2"
+    )
+    btn_volver.pack(pady=(10, 20))
+    estilo_boton(btn_volver, "#c62828", "#a31818")
+
+    # --- Mostrar ventana correctamente ---
     ventana_registro.update()
     ventana_registro.lift()
     ventana_registro.focus_force()
