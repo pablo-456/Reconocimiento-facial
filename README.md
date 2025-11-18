@@ -1,0 +1,37 @@
+                Sistema de Reconocimiento Facial (Python/Tkinter) - Windows.
+
+Este proyecto es un sistema de reconocimiento facial desarrollado completamente en Python, utilizando Tkinter para la interfaz de usuario (Front-end) y varias librerías de visión
+por computador para el procesamiento y reconocimiento (Modelo). Este proyecto esta todavia en desarrollo se espera optimizar y crear nuevas funciones a futuro
+
+Requisitos e Instalación:
+
+Para asegurar un entorno de trabajo limpio y evitar conflictos de dependencias, se recomienda encarecidamente trabajar dentro de un entorno virtual de Python.
+
+Crear entorno virtual: python -m venv tf-env
+Iniciar entorno virtual: .\tf-env\Scripts\activate
+
+Una vez activado el entorno virtual ((tf-env) debe aparecer al inicio de tu línea de comandos), procede a instalar todas las librerías necesarias utilizando pip:
+
+Instalar con pip install: pip install opencv-python mediapipe imutils pymongo numpy
+version mejorada de OpenCV recomendado para el programa: pip install opencv-contrib-python
+
+Configuración de la Base de Datos:
+
+El sistema utiliza MongoDB para la gestión de datos de usuarios y administradores. Es fundamental que la base de datos esté correctamente configurada y el servicio de MongoDB esté en ejecución.
+
+Asegúrate de que tu servidor de MongoDB se esté ejecutando en la ruta y puerto por defecto:
+Ruta del Servidor: //localhost:27017/
+
+Estructura de la Base de Datos:
+Se debe crear una base de datos específica y dos colecciones dentro de ella.
+
+Crear          Nombre     Propósito
+Base de Datos  rostrosDB  Contiene toda la información del sistema.
+Colección 1    personas   Almacenará los datos de los usuarios regulares
+Colección 2    admins     Almacenará los datos de los usuarios administradores.
+
+Ejecución del Programa:
+
+Asegúrate de que el entorno virtual esté activo y el servicio de MongoDB esté en ejecución.
+
+Ejecuta la aplicación principal --> archivo: main.py
