@@ -14,10 +14,10 @@ personas = db["personas"]
 
 # --- OPCIONES DE CÁMARA ---
 # 1️⃣ Cámara del PC (predeterminada)
-#cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(0)
 
 # 2️⃣ Cámara externa USB (por ejemplo, iPhone con Iriun o EpocCam por cable)
-cap = cv2.VideoCapture(2)  # o prueba con 2 si hay varias cámaras
+#cap = cv2.VideoCapture(2)  # o prueba con 2 si hay varias cámaras
 
 # --- Verificación de la cámara ---
 if not cap.isOpened():
@@ -30,7 +30,7 @@ cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
 # --- Obtener datos desde argumentos (enviados por Tkinter) ---
 if len(sys.argv) >= 4:
     cc = sys.argv[1].strip()
-    personName = sys.argv[2].strip().lower()
+    personName = sys.argv[2].strip()
     programa = " ".join(sys.argv[3:]).strip()
 else:
     print("⚠️ No se recibieron suficientes argumentos. Finalizando...")
@@ -108,7 +108,7 @@ while True:
                 rostro = cv2.resize(rostro, (150, 150))
                 guardar_rostro(person_id, rostro, count)
                 count += 1
-                print(f"📷 Foto {count} guardada (perfil izquierdo)")
+                print(f"Foto {count} guardada (perfil izquierdo)")
                 if count >= Maxfotos:
                     break
         else:
@@ -117,7 +117,7 @@ while True:
                 rostro = cv2.resize(rostro, (150, 150))
                 guardar_rostro(person_id, rostro, count)
                 count += 1
-                print(f"📷 Foto {count} guardada (perfil derecho)")
+                print(f"Foto {count} guardada (perfil derecho)")
                 if count >= Maxfotos:
                     break
     else:
@@ -126,7 +126,7 @@ while True:
             rostro = cv2.resize(rostro, (150, 150))
             guardar_rostro(person_id, rostro, count)
             count += 1
-            print(f"📷 Foto {count} guardada (frontal)")
+            print(f"Foto {count} guardada (frontal)")
             if count >= Maxfotos:
                 break
 

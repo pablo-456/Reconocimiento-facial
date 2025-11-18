@@ -4,7 +4,7 @@ from PIL import Image, ImageTk
 from utilidades import RUTA_BASE
 from registro_vista import registrar_rostro
 from inventario_usuarios import ver_inventario
-from registro_admin import mostrar_registro  # 🔹 si ya tienes esta función, se usará aquí
+from registro_admin import mostrar_registro  
 
 def mostrar_menu_admin(root_principal):
     # Crea una nueva ventana para el menú administrador
@@ -69,19 +69,18 @@ def mostrar_menu_admin(root_principal):
         relx=0.5, rely=0.59, ancho=69, alto=2
     )
 
-    crear_boton(
-        root_admin, "Movimientos", lambda: None,
-        color_fondo="#ffffff", color_hover="#f2f2f2", color_texto="black",
-        fuente=("Arial", 14, "bold"),
-        relx=0.5, rely=0.73, ancho=69, alto=2
-    )
+    #crear_boton(
+    #    root_admin, "Movimientos", lambda: None,
+    #    color_fondo="#ffffff", color_hover="#f2f2f2", color_texto="black",
+    #    fuente=("Arial", 14, "bold"),
+    #    relx=0.5, rely=0.85, ancho=69, alto=2
+    #)
 
-    # --- 🔹 Nuevo botón: Registrar admin ---
     crear_boton(
         root_admin, "Registrar admin", lambda: mostrar_registro(root_admin, root_principal),
         color_fondo="#ffffff", color_hover="#f2f2f2", color_texto="black",
         fuente=("Arial", 14, "bold"),
-        relx=0.5, rely=0.85, ancho=69, alto=2
+        relx=0.5, rely=0.73, ancho=69, alto=2
     )
 
     # --- Botón Volver ---

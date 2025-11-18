@@ -15,7 +15,7 @@ try:
     db = cliente["rostrosDB"]
     usuarios_collection = db["personas"]
 except Exception as e:
-    print("❌ Error al conectar con MongoDB:", e)
+    print("Error al conectar con MongoDB:", e)
     usuarios_collection = None
 
 
@@ -43,7 +43,7 @@ def registrar_rostro(root, abrir_menu_principal):
         label_fondo.image = fondo_tk
         label_fondo.place(x=0, y=0, relwidth=1, relheight=1)
     except Exception as e:
-        print(f"⚠️ No se pudo cargar la imagen de fondo 'base.png': {e}")
+        print(f"No se pudo cargar la imagen de fondo 'base.png': {e}")
         ventana_registro.configure(bg="#a6c7e9")  # color plano si no hay imagen
 
     # ---------- CONTENEDOR CENTRAL ----------
@@ -101,6 +101,8 @@ def registrar_rostro(root, abrir_menu_principal):
         "Administración de Empresas",
         "Contaduría",
         "Derecho",
+        "Profesor",
+        "Otro Cargo"
     ]
 
     estilo_combo = ttk.Style()
@@ -155,6 +157,8 @@ def registrar_rostro(root, abrir_menu_principal):
         return True
 
     # ---------- FUNCIÓN DE REGISTRO ----------
+    #El guardado como tal de los campos en la base de datos se realiza en:
+    #capturadora_optimizada.py
     def iniciar_registro():
         cc = cc_var.get().strip()
         nombre = nombre_var.get().strip()
@@ -188,7 +192,7 @@ def registrar_rostro(root, abrir_menu_principal):
             try:
                 ruta_script = os.path.join(RUTA_BASE, "capturadora_optimizada.py")
                 subprocess.run([sys.executable, ruta_script, cc, nombre, programa], check=True)
-                messagebox.showinfo("Finalizado", f"✅ Usuario {nombre} registrado correctamente.")
+                messagebox.showinfo("Finalizado", f" Usuario {nombre} registrado correctamente.")
             except FileNotFoundError:
                 messagebox.showerror("Error", f"No se encontró el archivo:\n{ruta_script}")
             except subprocess.CalledProcessError as e:

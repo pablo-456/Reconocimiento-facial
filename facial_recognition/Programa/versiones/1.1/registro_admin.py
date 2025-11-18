@@ -75,17 +75,17 @@ def mostrar_registro(ventana_login, ventana_principal):
             messagebox.showwarning("Campos vacíos", "Por favor complete todos los campos.")
             return
 
-        # ❌ Usuario con espacios
+        #Usuario con espacios
         if " " in usuario:
             messagebox.showerror("Error en usuario", "El nombre de usuario no puede contener espacios.")
             return
 
-        # ❌ Contraseña muy corta
+        #Contraseña muy corta
         if len(contra) < 8:
             messagebox.showerror("Error en contraseña", "La contraseña debe tener al menos 8 caracteres.")
             return
 
-        # ❌ Correo no institucional
+        # Correo no institucional
         if not email.endswith("@unisabaneta.edu.co"):
             messagebox.showerror("Error en correo", "Debe ingresar un correo institucional @unisabaneta.edu.co.")
             return

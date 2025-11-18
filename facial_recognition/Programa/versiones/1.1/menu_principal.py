@@ -3,81 +3,84 @@ import os
 from PIL import Image, ImageTk
 from utilidades import RUTA_BASE
 from reconocimiento_vista import reconocer_rostro
-import menu_administrador  # Menú admin
-import login_vista         # 👈 Importamos el login
+import login_vista
 
 
-def abrir_login():
+def abrir_login(root):
     """Oculta el menú principal y abre la ventana de login"""
-    root.withdraw()  # Oculta el menú principal
-    login_vista.mostrar_login(root)  # 👈 Le pasamos el root para poder volver después
+    root.withdraw()
+    login_vista.mostrar_login(root)
 
 
-# ---------------- MENÚ PRINCIPAL ----------------
-root = tk.Tk()
-root.title("Access Smart")
-root.attributes("-fullscreen", True)
+def crear_menu_principal():
+    """Crea y retorna la ventana principal sin ejecutarla"""
 
-ancho_pantalla = root.winfo_screenwidth()
-alto_pantalla = root.winfo_screenheight()
+    root = tk.Tk()
+    root.title("Access Smart")
+    root.attributes("-fullscreen", True)
 
-imagen_fondo = Image.open(os.path.join(RUTA_BASE, "imagenes", "menu.png"))
-imagen_fondo = imagen_fondo.resize((ancho_pantalla, alto_pantalla))
-fondo_tk = ImageTk.PhotoImage(imagen_fondo)
+    ancho_pantalla = root.winfo_screenwidth()
+    alto_pantalla = root.winfo_screenheight()
 
-label_fondo = tk.Label(root, image=fondo_tk)
-label_fondo.place(x=0, y=0, relwidth=1, relheight=1)
+    imagen_fondo = Image.open(os.path.join(RUTA_BASE, "imagenes", "menu.png"))
+    imagen_fondo = imagen_fondo.resize((ancho_pantalla, alto_pantalla))
+    fondo_tk = ImageTk.PhotoImage(imagen_fondo)
 
+    label_fondo = tk.Label(root, image=fondo_tk)
+    label_fondo.image = fondo_tk  # evitar recolección de basura
+    label_fondo.place(x=0, y=0, relwidth=1, relheight=1)
 
-def crear_boton(root, texto, comando, color_fondo, color_hover, color_texto, fuente, relx, rely, ancho, alto):
-    btn = tk.Button(
-        root,
-        text=texto,
-        command=comando,
-        bg=color_fondo,
-        fg=color_texto,
-        activeforeground=color_texto,
-        font=fuente,
-        width=ancho,
-        height=alto,
-        relief="solid",
-        bd=2,
-        highlightthickness=0,
-        cursor="hand2"
+    def crear_boton(texto, comando, color_fondo, color_hover, color_texto, fuente, relx, rely, ancho, alto):
+        btn = tk.Button(
+            root,
+            text=texto,
+            command=comando,
+            bg=color_fondo,
+            fg=color_texto,
+            activeforeground=color_texto,
+            font=fuente,
+            width=ancho,
+            height=alto,
+            relief="solid",
+            bd=2,
+            highlightthickness=0,
+            cursor="hand2"
+        )
+
+        def on_enter(e):
+            btn.config(bg=color_hover, relief="raised", bd=3)
+
+        def on_leave(e):
+            btn.config(bg=color_fondo, relief="solid", bd=2)
+
+        btn.bind("<Enter>", on_enter)
+        btn.bind("<Leave>", on_leave)
+        btn.place(relx=relx, rely=rely, anchor="center")
+        return btn
+
+    # --- Botones ---
+    crear_boton(
+        "ENTRAR",
+        lambda: reconocer_rostro(lambda: None),
+        "#4cc9f0", "#72d6f9", "black",
+        ("Arial", 14, "bold"),
+        relx=0.833, rely=0.475, ancho=28, alto=2
     )
 
-    def on_enter(e):
-        btn.config(bg=color_hover, relief="raised", bd=3)
+    crear_boton(
+        "ENTRAR",
+        lambda: abrir_login(root),
+        "#1b6fd0", "#3b83e3", "black",
+        ("Arial", 14, "bold"),
+        relx=0.833, rely=0.775, ancho=28, alto=2
+    )
 
-    def on_leave(e):
-        btn.config(bg=color_fondo, relief="solid", bd=2)
+    crear_boton(
+        "SALIR",
+        root.destroy,
+        "#e63946", "#ff6b6b", "white",
+        ("Arial", 12, "bold"),
+        relx=0.95, rely=0.95, ancho=10, alto=1
+    )
 
-    btn.bind("<Enter>", on_enter)
-    btn.bind("<Leave>", on_leave)
-    btn.place(relx=relx, rely=rely, anchor="center")
-    return btn
-
-
-# --- Botones ---
-btn_verificacion = crear_boton(
-    root, "ENTRAR", lambda: reconocer_rostro(lambda: None),
-    color_fondo="#4cc9f0", color_hover="#72d6f9", color_texto="black",
-    fuente=("Arial", 14, "bold"),
-    relx=0.833, rely=0.475, ancho=28, alto=2
-)
-
-btn_admin = crear_boton(
-    root, "ENTRAR", abrir_login,  # 👈 Cambiamos a login
-    color_fondo="#1b6fd0", color_hover="#3b83e3", color_texto="black",
-    fuente=("Arial", 14, "bold"),
-    relx=0.833, rely=0.775, ancho=28, alto=2
-)
-
-btn_salir = crear_boton(
-    root, "SALIR", root.destroy,
-    color_fondo="#e63946", color_hover="#ff6b6b", color_texto="white",
-    fuente=("Arial", 12, "bold"),
-    relx=0.95, rely=0.95, ancho=10, alto=1
-)
-
-root.mainloop()
+    return root

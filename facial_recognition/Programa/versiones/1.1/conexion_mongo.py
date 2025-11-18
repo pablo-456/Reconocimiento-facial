@@ -1,13 +1,13 @@
 from pymongo import MongoClient
 
 try:
-    # 🔹 Conexión local a MongoDB
+    # Conexión local a MongoDB
     cliente = MongoClient("mongodb://localhost:27017/")
 
-    # 🔹 Nombre de la base de datos
+    # Nombre de la base de datos
     db = cliente["rostrosDB"]
 
-    # 🔹 Colección para los administradores
+    # Colección para los administradores
     coleccion_admins = db["admins"]
 
     print("✅ Conexión exitosa a MongoDB")

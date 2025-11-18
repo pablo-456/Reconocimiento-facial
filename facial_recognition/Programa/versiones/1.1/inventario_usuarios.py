@@ -3,7 +3,7 @@ from tkinter import ttk, messagebox
 from pymongo import MongoClient
 from PIL import Image, ImageTk
 import os
-from utilidades import RUTA_BASE  # ✅ Igual que en tu login
+from utilidades import RUTA_BASE  
 
 
 # --- Conexión directa a MongoDB ---
@@ -26,25 +26,19 @@ def ver_inventario(root, abrir_menu_principal):
     ventana_inv.configure(bg="#a6c7e9")
     ventana_inv.attributes("-fullscreen", True)
 
-    # ---------- 💠 IMAGEN DE FONDO (usando RUTA_BASE + carpeta imagenes) ----------
+    # ----------  IMAGEN DE FONDO ----------
     try:
-        # Obtener tamaño de pantalla
         sw = ventana_inv.winfo_screenwidth()
         sh = ventana_inv.winfo_screenheight()
-
-        # Ruta absoluta de la imagen base
         ruta_fondo = os.path.join(RUTA_BASE, "imagenes", "base_usuario.png")
-
-        # Cargar y redimensionar
         img = Image.open(ruta_fondo)
         img = img.resize((sw, sh))
         fondo_img = ImageTk.PhotoImage(img)
-
         fondo_label = tk.Label(ventana_inv, image=fondo_img)
-        fondo_label.image = fondo_img  # evitar recolección
+        fondo_label.image = fondo_img
         fondo_label.place(x=0, y=0, relwidth=1, relheight=1)
     except Exception as e:
-        print(f"⚠️ No se pudo cargar la imagen de fondo: {e}")
+        print(f"No se pudo cargar la imagen de fondo: {e}")
 
     # ---------- CONTENEDOR CENTRAL ----------
     frame_central = tk.Frame(
@@ -57,7 +51,6 @@ def ver_inventario(root, abrir_menu_principal):
     )
     frame_central.place(relx=0.5, rely=0.5, anchor="center", relwidth=0.75, relheight=0.75)
 
-    # ---------- TÍTULO ----------
     tk.Label(
         frame_central,
         text="Inventario de Estudiantes Registrados",
@@ -66,7 +59,7 @@ def ver_inventario(root, abrir_menu_principal):
         fg="#111"
     ).pack(pady=(40, 15))
 
-    # ======= FRAME DE FILTRO =======
+    # ======= FILTRO =======
     filtro_frame = tk.Frame(frame_central, bg="white")
     filtro_frame.pack(pady=(5, 10))
 
@@ -79,37 +72,25 @@ def ver_inventario(root, abrir_menu_principal):
     combo_programas.pack(side="left", padx=5)
 
     # ---------- TABLA ----------
-    columnas = ("cc", "nombre", "programa", "accion")
+    columnas = ("cc", "nombre", "programa")
     tabla = ttk.Treeview(frame_central, columns=columnas, show="headings", height=10)
     tabla.pack(padx=40, pady=20, fill="both", expand=True)
 
     tabla.heading("cc", text="C.C / Identificación")
     tabla.heading("nombre", text="Nombre Completo")
     tabla.heading("programa", text="Programa de Estudio")
-    tabla.heading("accion", text="Acción")
 
     tabla.column("cc", width=200)
     tabla.column("nombre", width=300)
     tabla.column("programa", width=250)
-    tabla.column("accion", width=120, anchor="center")
 
     # ---------- ESTILO ----------
     estilo = ttk.Style()
     estilo.theme_use("clam")
-    estilo.configure(
-        "Treeview",
-        background="white",
-        foreground="black",
-        rowheight=30,
-        fieldbackground="white",
-        font=("Segoe UI", 12)
-    )
-    estilo.configure(
-        "Treeview.Heading",
-        background="#4c9aff",
-        foreground="black",
-        font=("Segoe UI", 13, "bold")
-    )
+    estilo.configure("Treeview", background="white", foreground="black",
+                     rowheight=30, fieldbackground="white", font=("Segoe UI", 12))
+    estilo.configure("Treeview.Heading", background="#4c9aff", foreground="black",
+                     font=("Segoe UI", 13, "bold"))
 
     # ---------- CARGAR DATOS ----------
     def cargar_datos(programa_filtrado=None):
@@ -118,14 +99,15 @@ def ver_inventario(root, abrir_menu_principal):
             filtro = {}
             if programa_filtrado and programa_filtrado != "Todos":
                 filtro["programa"] = programa_filtrado
+
             usuarios = list(usuarios_collection.find(filtro, {"_id": 0, "cc": 1, "nombre": 1, "programa": 1}))
+
             if usuarios:
                 for usuario in usuarios:
                     tabla.insert("", "end", values=(
                         usuario.get("cc", ""),
                         usuario.get("nombre", ""),
                         usuario.get("programa", ""),
-                        "Editar"  # <-- texto que simula botón
                     ))
             else:
                 messagebox.showinfo("Sin datos", "No hay usuarios registrados en la base de datos.")
@@ -137,41 +119,139 @@ def ver_inventario(root, abrir_menu_principal):
         combo_programas["values"] = ["Todos"] + sorted([p for p in programas if p])
         combo_programas.current(0)
 
-    def filtrar_programa(event):
-        seleccionado = combo_programas.get()
-        cargar_datos(seleccionado)
+    combo_programas.bind("<<ComboboxSelected>>", lambda e: cargar_datos(combo_programas.get()))
 
-    combo_programas.bind("<<ComboboxSelected>>", filtrar_programa)
+    # ---- EDITOR EN LÍNEA ----
+    editor_widget = None
+    boton_guardar = None
+    item_editando = None
+    col_editando = None
 
-    # --- Simular botón "Editar" con evento de doble clic ---
-    def click_en_tabla(event):
+    programas = [
+        "Ing. Informática",
+        "Ing. Aeronáutica",
+        "Administración de Empresas",
+        "Contaduría",
+        "Derecho",
+        "Profesor",
+        "Otro Cargo"
+    ]
+
+    def iniciar_edicion(event):
+        nonlocal editor_widget, boton_guardar, item_editando, col_editando
+
+        # Detectar celda
         item = tabla.identify_row(event.y)
-        columna = tabla.identify_column(event.x)
-        if columna == "#4" and item:  # Columna 'accion'
-            usuario = tabla.item(item, "values")
-            messagebox.showinfo("Editar", f"Hiciste clic en Editar para:\n{usuario[1]}")
+        col = tabla.identify_column(event.x)
 
-    tabla.bind("<Double-1>", click_en_tabla)
+        if not item:
+            return
+
+        col_index = int(col.replace("#", "")) - 1  # 0=cc,1=nombre,2=programa
+
+        # ❌ La cédula NO se edita
+        if col_index == 0:
+            return
+
+        # Limpiar ediciones anteriores
+        cancelar_edicion()
+
+        item_editando = item
+        col_editando = col_index
+
+        valores = list(tabla.item(item, "values"))
+        x, y, ancho, alto = tabla.bbox(item, col)
+
+        # -------------------------
+        # ✔ NOMBRE → Entry
+        # -------------------------
+        if col_index == 1:
+            editor_widget = tk.Entry(tabla, font=("Segoe UI", 12))
+            editor_widget.insert(0, valores[col_index])
+
+        # -------------------------
+        # ✔ PROGRAMA → ComboBox
+        # -------------------------
+        elif col_index == 2:
+            editor_widget = ttk.Combobox(
+                tabla,
+                values=programas,
+                state="readonly",
+                font=("Segoe UI", 12)
+            )
+            editor_widget.set(valores[col_index])
+
+        editor_widget.place(x=x, y=y, width=ancho, height=alto)
+        editor_widget.focus()
+
+        # Crear botón guardar debajo de la celda
+        boton_guardar = tk.Button(
+            frame_central,
+            text="Guardar cambios",
+            font=("Segoe UI", 12, "bold"),
+            bg="#4caf50",
+            fg="black",
+            command=guardar_desde_boton
+        )
+        boton_guardar.pack(pady=5)
+
+    def cancelar_edicion():
+        nonlocal editor_widget, boton_guardar, item_editando, col_editando
+        if editor_widget:
+            editor_widget.destroy()
+            editor_widget = None
+        if boton_guardar:
+            boton_guardar.destroy()
+            boton_guardar = None
+        item_editando = None
+        col_editando = None
+
+    def guardar_desde_boton():
+        nonlocal editor_widget, boton_guardar, item_editando, col_editando
+
+        if not editor_widget or item_editando is None:
+            return
+
+        nuevo_valor = editor_widget.get()
+        valores = list(tabla.item(item_editando, "values"))
+        cc_actual = valores[0]  # cédula NO cambia
+
+        valores[col_editando] = nuevo_valor
+        tabla.item(item_editando, values=valores)
+
+        campo_modificado = ["cc", "nombre", "programa"][col_editando]
+
+        usuarios_collection.update_one(
+            {"cc": cc_actual},
+            {"$set": {campo_modificado: nuevo_valor}}
+        )
+
+        messagebox.showinfo("Éxito", "Cambios guardados correctamente.")
+
+        cancelar_edicion()
+
+    # Activar edición con un solo clic
+    tabla.bind("<Button-1>", iniciar_edicion)
+
 
     # Cargar datos iniciales
     cargar_programas()
     cargar_datos()
 
-    # ---------- FUNCIÓN VOLVER ----------
+    # ---------- VOLVER ----------
     def volver_menu_admin():
         ventana_inv.destroy()
         root.deiconify()
 
-    # ---------- ESTILO BOTÓN ----------
+    # ---------- BOTÓN ----------
     def estilo_boton(widget, color_base, color_hover):
         def on_enter(e): widget.config(bg=color_hover)
         def on_leave(e): widget.config(bg=color_base)
         widget.bind("<Enter>", on_enter)
         widget.bind("<Leave>", on_leave)
 
-    # ---------- BOTÓN VOLVER ----------
     btn_volver = tk.Button(
-        ventana_inv,  # 👈 colocado sobre la ventana principal
+        ventana_inv,
         text="Volver al menú principal",
         command=volver_menu_admin,
         bg="#c62828",
@@ -184,7 +264,7 @@ def ver_inventario(root, abrir_menu_principal):
         cursor="hand2",
         highlightthickness=0
     )
-    btn_volver.place(relx=0.5, rely=0.93, anchor="center")  # 👈 centrado al fondo
+    btn_volver.place(relx=0.5, rely=0.93, anchor="center")
     estilo_boton(btn_volver, "#c62828", "#ff6b6b")
 
     ventana_inv.protocol("WM_DELETE_WINDOW", volver_menu_admin)

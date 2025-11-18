@@ -5,7 +5,7 @@ import os
 from utilidades import RUTA_BASE
 from conexion_mongo import coleccion_admins
 import menu_administrador
-from recuperacion_contrasena import mostrar_recuperacion  # 🔹 nuevo import
+from recuperacion_contrasena import mostrar_recuperacion  
 
 def mostrar_login(ventana_principal):
     # --- Ventana principal del login ---
@@ -87,7 +87,7 @@ def mostrar_login(ventana_principal):
         if not usuario or not contra:
             messagebox.showwarning("Campos vacíos", "Por favor complete todos los campos.")
             return
-            # 🔹 Verificar primero el usuario y contraseña predeterminados
+            #Verificar primero el usuario y contraseña predeterminados
         if usuario == "Admin00" and contra == "12345678":
             messagebox.showinfo("Acceso concedido", "Bienvenido, administrador principal.")
             login.destroy()
@@ -145,7 +145,7 @@ def mostrar_login(ventana_principal):
 
     # --- Botón rojo (Volver) en la esquina inferior derecha ---
     btn_volver = tk.Button(
-        login,  # 🔹 Está directamente en la ventana, no dentro del frame blanco
+        login,  #Está directamente en la ventana, no dentro del frame blanco
         text="Volver",
         command=volver_menu,
         bg="#c62828",
@@ -158,7 +158,7 @@ def mostrar_login(ventana_principal):
         cursor="hand2"
     )
 
-    # 🔹 Lo colocamos en la esquina inferior derecha
+    #Lo colocamos en la esquina inferior derecha
     btn_volver.place(relx=0.90, rely=0.93)  # Ajusta si lo quieres más al borde (ej. 0.92 / 0.95)
 
     # --- Efecto hover ---
