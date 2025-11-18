@@ -1,7 +1,7 @@
                 Sistema de Reconocimiento Facial (Python/Tkinter) - Windows.
 
 Este proyecto es un sistema de reconocimiento facial desarrollado completamente en Python, utilizando Tkinter para la interfaz de usuario (Front-end) y varias librerías de visión
-por computador para el procesamiento y reconocimiento (Modelo).
+por computador para el procesamiento y reconocimiento (Modelo). Este proyecto esta todavia en desarrollo se espera optimizar y crear nuevas funciones a futuro
 
 Requisitos e Instalación:
 
