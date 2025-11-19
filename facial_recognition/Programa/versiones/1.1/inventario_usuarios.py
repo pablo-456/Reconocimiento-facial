@@ -53,7 +53,7 @@ def ver_inventario(root, abrir_menu_principal):
 
     tk.Label(
         frame_central,
-        text="Inventario de Estudiantes Registrados",
+        text="Inventario de Usuarios Registrados",
         font=("Segoe UI", 24, "bold"),
         bg="white",
         fg="#111"
