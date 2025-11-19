@@ -64,7 +64,7 @@ def ver_inventario(root, abrir_menu_principal):
     filtro_frame.pack(pady=(5, 10))
 
     tk.Label(
-        filtro_frame, text="Filtrar por programa:",
+        filtro_frame, text="Filtrar por programa o cargo:",
         bg="white", font=("Segoe UI", 12, "bold")
     ).pack(side="left", padx=(10, 5))
 
@@ -78,7 +78,7 @@ def ver_inventario(root, abrir_menu_principal):
 
     tabla.heading("cc", text="C.C / Identificación")
     tabla.heading("nombre", text="Nombre Completo")
-    tabla.heading("programa", text="Programa de Estudio")
+    tabla.heading("programa", text="Programa de Estudio/Cargo")
 
     tabla.column("cc", width=200)
     tabla.column("nombre", width=300)

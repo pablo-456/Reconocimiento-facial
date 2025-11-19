@@ -60,7 +60,7 @@ def registrar_rostro(root, abrir_menu_principal):
     # ---------- TÍTULO ----------
     tk.Label(
         frame_central,
-        text="Registro de Estudiante",
+        text="Registro de Usuarios",
         font=("Segoe UI", 24, "bold"),
         bg="white",
         fg="#111"
@@ -90,7 +90,7 @@ def registrar_rostro(root, abrir_menu_principal):
 
     # ---------- COMBOBOX ----------
     tk.Label(
-        frame_central, text="Programa de estudio:",
+        frame_central, text="Programa de estudio o cargo:",
         font=("Segoe UI", 13, "bold"),
         bg="white", fg="#222", anchor="w"
     ).pack(fill="x", padx=60, pady=(20, 0))
@@ -127,7 +127,7 @@ def registrar_rostro(root, abrir_menu_principal):
         style="Custom.TCombobox"
     )
     programa_combo.pack(pady=5)
-    programa_combo.set("Seleccione un programa")
+    programa_combo.set("Seleccione un Programa/Cargo")
 
     # ---------- MENSAJE DE ESTADO ----------
     mensaje_estado = tk.Label(
