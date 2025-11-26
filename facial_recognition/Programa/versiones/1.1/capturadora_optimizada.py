@@ -62,7 +62,7 @@ frontal_face = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_fronta
 profile_face = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_profileface.xml')
 
 count = 0
-Maxfotos = 400
+Maxfotos = 50
 
 # --- FaceMesh (Mediapipe) ---
 mp_face_mesh = mp.solutions.face_mesh
@@ -75,6 +75,25 @@ face_mesh = mp_face_mesh.FaceMesh(
     min_tracking_confidence=0.5
 )
 
+# --- Filtro por histograma ---
+ultimo_hist = None
+
+def es_diferente(rostro_raw, ultimo_hist, umbral=0.20):
+    """Retorna True si la imagen es diferente a la última guardada."""
+
+    # Histograma SOLO con la imagen sin preprocesar
+    hist = cv2.calcHist([rostro_raw], [0], None, [256], [0, 256])
+    hist = cv2.normalize(hist, hist).flatten()
+
+    if ultimo_hist is None:
+        return True, hist  # Primera imagen siempre se guarda
+
+    correlacion = cv2.compareHist(ultimo_hist, hist, cv2.HISTCMP_CORREL)
+
+    # Si correlación es alta -> muy parecidas
+    return correlacion < (1 - umbral), hist
+
+
 # --- Función para guardar rostro ---
 def guardar_rostro(person_id, rostro, count):
     _, buffer = cv2.imencode(".jpg", rostro)
@@ -84,8 +103,12 @@ def guardar_rostro(person_id, rostro, count):
         {"$push": {"rostros": {"imagen_id": count, "data": rostro_bytes}}}
     )
 
-# --- Captura principal ---
+
+# --- CAPTURA PRINCIPAL CON FILTRO ---
 print("📸 Capturando rostros (Presione ESC para salir)")
+
+ultimo_hist = None
+
 while True:
     ret, frame = cap.read()
     if not ret:
@@ -97,59 +120,74 @@ while True:
     auxFrame = gray.copy()
 
     faces = frontal_face.detectMultiScale(gray, 1.2, 6, minSize=(80, 80))
+
     if len(faces) == 0:
         faces = profile_face.detectMultiScale(gray, 1.2, 6, minSize=(80, 80))
-        if len(faces) == 0:
-            flipped = cv2.flip(gray, 1)
-            faces = profile_face.detectMultiScale(flipped, 1.2, 6, minSize=(80, 80))
-            for (x, y, w, h) in faces:
-                x = frame.shape[1] - x - w
-                rostro = auxFrame[y:y+h, x:x+w]
-                rostro = cv2.resize(rostro, (150, 150))
-                guardar_rostro(person_id, rostro, count)
-                count += 1
-                print(f"Foto {count} guardada (perfil izquierdo)")
-                if count >= Maxfotos:
-                    break
-        else:
-            for (x, y, w, h) in faces:
-                rostro = auxFrame[y:y+h, x:x+w]
-                rostro = cv2.resize(rostro, (150, 150))
-                guardar_rostro(person_id, rostro, count)
-                count += 1
-                print(f"Foto {count} guardada (perfil derecho)")
-                if count >= Maxfotos:
-                    break
+
+    if len(faces) == 0:
+        flipped = cv2.flip(gray, 1)
+        faces = profile_face.detectMultiScale(flipped, 1.2, 6, minSize=(80, 80))
+        mirror = True
     else:
-        for (x, y, w, h) in faces:
-            rostro = auxFrame[y:y+h, x:x+w]
-            rostro = cv2.resize(rostro, (150, 150))
+        mirror = False
+
+    for (x, y, w, h) in faces:
+        if mirror:
+            x = frame.shape[1] - x - w
+
+        rostro_raw = auxFrame[y:y+h, x:x+w]        # Imagen original para comparar
+        rostro_raw = cv2.resize(rostro_raw, (150, 150))
+
+        # --- Validar si es diferente (sin preprocesar) ---
+        diferente, nuevo_hist = es_diferente(rostro_raw, ultimo_hist)
+
+        if diferente:
+            # --- Preprocesamiento SOLO cuando se va a guardar ---
+            rostro = cv2.equalizeHist(rostro_raw)
+            rostro = cv2.GaussianBlur(rostro, (3, 3), 0)
+
             guardar_rostro(person_id, rostro, count)
             count += 1
-            print(f"Foto {count} guardada (frontal)")
-            if count >= Maxfotos:
-                break
+            ultimo_hist = nuevo_hist
 
+            print(f"Foto {count} guardada ✔")
+        else:
+            print("Foto descartada (muy similar) ✘")
+
+        if count >= Maxfotos:
+            break
+
+    # --- FaceMesh overlay ---
+    
     rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     results = face_mesh.process(rgb)
+
     if results.multi_face_landmarks:
         for face_landmarks in results.multi_face_landmarks:
+            # Malla completa (amarillo)
             mp_drawing.draw_landmarks(
                 frame,
                 face_landmarks,
                 mp_face_mesh.FACEMESH_TESSELATION,
                 landmark_drawing_spec=None,
-                connection_drawing_spec=mp_drawing.DrawingSpec(color=(0, 255, 255), thickness=1)
+                connection_drawing_spec=mp_drawing.DrawingSpec(
+                    color=(0, 255, 255), thickness=1
+                )
             )
+
+            # Contornos (blanco)
             mp_drawing.draw_landmarks(
                 frame,
                 face_landmarks,
                 mp_face_mesh.FACEMESH_CONTOURS,
-                landmark_drawing_spec=mp_drawing.DrawingSpec(color=(255, 255, 255), thickness=1, circle_radius=1)
+                landmark_drawing_spec=mp_drawing.DrawingSpec(
+                    color=(255, 255, 255), thickness=1, circle_radius=1
+                )
             )
 
     cv2.imshow("Capturando Rostros", frame)
     k = cv2.waitKey(1)
+
     if k == 27 or count >= Maxfotos:
         break
 

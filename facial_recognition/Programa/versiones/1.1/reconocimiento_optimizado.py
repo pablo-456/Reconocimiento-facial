@@ -29,7 +29,7 @@ except Exception as e:
 # ============================================================
 # Parámetros (ajusta si quieres)
 # ============================================================
-UMBRAL_CONFIANZA = 60
+UMBRAL_CONFIANZA = 65
 FRAME_SKIP = 2         # detectar cada N frames
 RESIZE_WIDTH = 640     # ancho de procesamiento (menor = más rápido)
 FPS_DISPLAY_SMOOTH = 0.9
