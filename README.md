@@ -8,6 +8,7 @@ El programa se ejecuta utilizando python 3.10, recomendado python 3.10.11
 Para asegurar un entorno de trabajo limpio y evitar conflictos de dependencias, se recomienda encarecidamente trabajar dentro de un entorno virtual de Python.
 
 Crear entorno virtual: python -m venv tf-env
+
 Iniciar entorno virtual: .\tf-env\Scripts\activate
 
 Una vez activado el entorno virtual ((tf-env) debe aparecer al inicio de tu línea de comandos), procede a instalar todas las librerías necesarias utilizando pip:
