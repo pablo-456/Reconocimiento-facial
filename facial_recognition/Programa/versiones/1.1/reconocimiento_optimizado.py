@@ -163,6 +163,7 @@ while True:
 
         else:
             name = "Desconocido"
+            estado= "?"
             color_estado = (0, 0, 255)
 
 
