@@ -159,7 +159,7 @@ while True:
         elif confidence < UMBRAL_DEBIL and 0 <= label < len(imagePaths):
             name = imagePaths[label]
             estado = "."
-            color_estado = (0, 255, 255)
+            color_estado = (0, 255, 0)
 
         else:
             name = "Desconocido"
@@ -242,7 +242,7 @@ while True:
         window_name = "Reconocimiento Facial (corregido)"
         cv2.namedWindow(window_name, cv2.WINDOW_NORMAL)
         cv2.imshow(window_name, frame)
-        cv2.setWindowProperty(window_name, cv2.WND_PROP_TOPMOST, 1)  # 🔹 Hace que esté al frente
+        cv2.setWindowProperty(window_name, cv2.WND_PROP_TOPMOST, 1) 
         import tkinter as tk
         root_tk = tk.Tk()
         screen_width = root_tk.winfo_screenwidth()
