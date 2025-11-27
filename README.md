@@ -27,10 +27,13 @@ Estructura de la Base de Datos:
 Se debe crear una base de datos específica y dos colecciones dentro de ella.
 Crear la BD y las colecciones exactamente con el mismo nombre que se muestra acontinuacion
 
-Crear          Nombre     Propósito
-Base de Datos  rostrosDB  Contiene toda la información del sistema.
-Colección 1    personas   Almacenará los datos de los usuarios regulares
-Colección 2    admins     Almacenará los datos de los usuarios administradores.
+Crear:
+
+Base de Datos:  rostrosDB  "Contiene toda la información del sistema."
+
+Colección 1:   personas   "Almacenará los datos de los usuarios regulares"
+
+Colección 2:    admins     "Almacenará los datos de los usuarios administradores."
 
 Ejecución del Programa:
 
