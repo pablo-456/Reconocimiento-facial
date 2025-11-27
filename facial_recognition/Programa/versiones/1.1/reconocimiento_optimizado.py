@@ -29,7 +29,9 @@ except Exception as e:
 # ============================================================
 # Parámetros (ajusta si quieres)
 # ============================================================
-UMBRAL_CONFIANZA = 65
+UMBRAL_FUERTE = 55     # súper confiable
+UMBRAL_DEBIL = 65      # por encima de esto = desconocido
+
 FRAME_SKIP = 2         # detectar cada N frames
 RESIZE_WIDTH = 640     # ancho de procesamiento (menor = más rápido)
 FPS_DISPLAY_SMOOTH = 0.9
@@ -148,10 +150,21 @@ while True:
             print("Predict error:", e)
             continue
 
-        if confidence < UMBRAL_CONFIANZA and 0 <= label < len(imagePaths):
+        # ----------- DOBLE UMBRAL DE RECONOCIMIENTO -----------
+        if confidence < UMBRAL_FUERTE and 0 <= label < len(imagePaths):
             name = imagePaths[label]
+            estado = "."
+            color_estado = (0, 255, 0)
+
+        elif confidence < UMBRAL_DEBIL and 0 <= label < len(imagePaths):
+            name = imagePaths[label]
+            estado = "."
+            color_estado = (0, 255, 255)
+
         else:
             name = "Desconocido"
+            color_estado = (0, 0, 255)
+
 
         # -------------------------------------
         # --- MENSAJE DE DETECCIÓN DE USUARIO ---
@@ -199,8 +212,10 @@ while True:
 
         color = (0, 255, 0) if stable_name != "Desconocido" else (0, 0, 255)
         cv2.rectangle(frame, (x, y), (x + w, y + h), color, 2)
-        cv2.putText(frame, f"{stable_name} ({confidence:.1f})", (x, y - 8),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
+        cv2.putText(frame, f"{name}  [{confidence:.1f}]  {estado}",
+            (x, y - 10),
+            cv2.FONT_HERSHEY_SIMPLEX, 0.6,
+            color_estado, 2)
 
     # Decaimiento ligero de memoria
     if frame_count % 30 == 0:
